@@ -1,10 +1,16 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface userInterface extends Document {
-  name: string;
-  email: string;
-  password: string;
-  allNotes?: mongoose.Types.ObjectId;
+  name: string,
+  email: string,
+  dob: string,
+  allNotes?: mongoose.Types.ObjectId,
+}
+
+export interface userPartialInterface {
+  name: string,
+  email: string,
+  dob: string,
 }
 
 const userSchema: Schema<userInterface> = new mongoose.Schema(
@@ -17,7 +23,7 @@ const userSchema: Schema<userInterface> = new mongoose.Schema(
       type: String,
       required: true,
     },
-    password: {
+    dob: {
       type: String,
       required: true,
     },

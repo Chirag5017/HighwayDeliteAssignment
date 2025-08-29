@@ -1,9 +1,8 @@
 import app from "./app";
 import connectDB from "./db/connectDB"
-import dotenv from "dotenv";
+import { ENV } from "./config/env";
 
-dotenv.config({path : "./.env"});
-const PORT = process.env.PORT
+const PORT = ENV.PORT || 5000
 
 const startServer = () => {
     try {
