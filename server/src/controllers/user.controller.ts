@@ -28,6 +28,7 @@ export class UserController {
             .status(201)
             .cookie("token", result.token)
             .json({
+                user : result.user,
                 message : result.message,
                 success : result.success
             })
@@ -45,6 +46,7 @@ export class UserController {
             .status(201)
             .cookie("token", result.token)
             .json({
+                 user : result.user,
                 message : result.message,
                 success : result.success
             })

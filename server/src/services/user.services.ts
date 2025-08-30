@@ -37,6 +37,7 @@ export class UserService {
     const token = this.genToken.generateToken(user)
 
     return {
+      user : user,
       success: true,
       message: "SignUp successful",
       token : token
@@ -51,6 +52,7 @@ export class UserService {
 
      const token = this.genToken.generateToken(user);
      return {
+        user : user,
         success : true,
         message : `Welcome ${user.name}`,
         token : token

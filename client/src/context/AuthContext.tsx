@@ -40,11 +40,12 @@ useEffect(() => {
       const res = await axios.get(`${Backend_Url}/user/me`, { withCredentials: true });
       if (res.data.success) {
         setUser(res.data.user);
+        navigate("/dashboard");
       } else {
-        setUser(null);
+        navigate(`/${flag}`);
       }
     } catch {
-      setUser(null);
+      navigate(`/${flag}`);
     } finally {
       setLoading(false);
     }
