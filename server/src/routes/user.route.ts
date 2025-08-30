@@ -7,7 +7,7 @@ import { AuthMiddleware } from "../middleware/auth.middleware";
 
 const userService = new UserService(userRepo, generateToken, sendOtpEmail);
 const controller = new UserController(userService);
-const userAuthentication = new AuthMiddleware(userRepo);
+const userAuthentication = new AuthMiddleware();
 
 const router = Router();
 

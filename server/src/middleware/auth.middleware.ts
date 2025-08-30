@@ -11,7 +11,6 @@ interface MyJwtPayload extends JwtPayload {
 
 
 export class AuthMiddleware {
-    constructor(private userRepo : UserRepository) {}
 
     authenticateUser = async(req : Request, res : Response, next : NextFunction) => {
             try {
