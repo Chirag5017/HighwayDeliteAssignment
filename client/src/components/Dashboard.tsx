@@ -1,16 +1,21 @@
-import { Trash2, X, Plus, Eye, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { Trash2, Plus, Eye, Sparkles, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useNotes, type Note } from '../context/NoteContext';
 import { useAuth } from '../context/AuthContext';
-import { Logo } from './Logo';
+
+
 
 export function Dashboard() {
   const { user, logout } = useAuth();
-  const { notes, deleteNote } = useNotes();
+  const { notes, deleteNote, fetchNotes } = useNotes();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [viewingNote, setViewingNote] = useState<Note | null>(null);
 
-  const handleDeleteNote = (noteId: number, e: React.MouseEvent) => {
+  useEffect(() => {
+    fetchNotes(); // ✅ load notes when dashboard mounts
+  }, []);
+
+  const handleDeleteNote = (noteId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     deleteNote(noteId);
   };
@@ -21,6 +26,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Mobile */}
       <div className="sm:hidden">
         <div className="bg-white px-4 py-3 flex items-center justify-between border-b border-gray-100">
           <div className="flex items-center gap-2">
@@ -59,8 +65,7 @@ export function Dashboard() {
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-base font-medium text-gray-900 truncate">{note.title}</h4>
-                        {/* <p className="text-sm text-gray-600 mt-1 line-clamp-2">{note.description}</p> */}
+                        <h4 className="text-base font-medium text-gray-900 truncate">{note.heading}</h4>
                       </div>
                       <div className="flex items-center gap-2 ml-3">
                         <button
@@ -85,12 +90,13 @@ export function Dashboard() {
               )}
             </div>
           </div>
-        <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2">
-          <div className="w-32 h-1 bg-black rounded-full"></div>
+          <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2">
+            <div className="w-32 h-1 bg-black rounded-full"></div>
+          </div>
         </div>
       </div>
-      </div>
 
+      {/* Desktop */}
       <div className="hidden sm:block">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white px-8 py-6 flex items-center justify-between border-b border-gray-100">
@@ -133,8 +139,7 @@ export function Dashboard() {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-lg font-medium text-gray-900 truncate mb-2">{note.title}</h4>
-                          {/* <p className="text-sm text-gray-600 line-clamp-3">{note.description}</p> */}
+                          <h4 className="text-lg font-medium text-gray-900 truncate mb-2">{note.heading}</h4>
                         </div>
                         <div className="flex items-center gap-2 ml-4">
                           <button
@@ -163,6 +168,7 @@ export function Dashboard() {
         </div>
       </div>
 
+      {/* Modals */}
       <CreateNoteModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
       <ViewNoteModal note={viewingNote} isOpen={!!viewingNote} onClose={() => setViewingNote(null)} />
     </div>
@@ -172,18 +178,18 @@ export function Dashboard() {
 interface CreateNoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-};
+}
 
-function CreateNoteModal({ isOpen, onClose }: CreateNoteModalProps) {
+export function CreateNoteModal({ isOpen, onClose }: CreateNoteModalProps) {
   const { addNote } = useNotes();
-  const [title, setTitle] = useState('');
+  const [heading, setHeading] = useState('');
   const [description, setDescription] = useState('');
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (title.trim() && description.trim()) {
-      addNote(title.trim(), description.trim());
-      setTitle('');
+    if (heading.trim() && description.trim()) {
+      addNote(heading.trim(), description.trim()); // ✅ uses context
+      setHeading('');
       setDescription('');
       onClose();
     }
@@ -203,13 +209,13 @@ function CreateNoteModal({ isOpen, onClose }: CreateNoteModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Heading</label>
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={heading}
+              onChange={(e) => setHeading(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter note title"
+              placeholder="Enter note heading"
               required
             />
           </div>
@@ -251,9 +257,9 @@ interface ViewNoteModalProps  {
   note: Note | null;
   isOpen: boolean;
   onClose: () => void;
-};
+}
 
-function ViewNoteModal({ note, isOpen, onClose }: ViewNoteModalProps) {
+export function ViewNoteModal({ note, isOpen, onClose }: ViewNoteModalProps) {
   const { deleteNote } = useNotes();
 
   const handleDelete = () => {
@@ -277,9 +283,9 @@ function ViewNoteModal({ note, isOpen, onClose }: ViewNoteModalProps) {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Heading</label>
             <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-gray-900">{note.title}</p>
+              <p className="text-gray-900">{note.heading}</p>
             </div>
           </div>
 
@@ -310,4 +316,3 @@ function ViewNoteModal({ note, isOpen, onClose }: ViewNoteModalProps) {
     </div>
   );
 }
-

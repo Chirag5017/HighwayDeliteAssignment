@@ -78,6 +78,7 @@ useEffect(() => {
       return false;
     }
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    console.log(otp);
     setOTP(otp);
 
     try {

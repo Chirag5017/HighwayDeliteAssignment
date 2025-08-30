@@ -33,7 +33,11 @@ export class NoteController {
     addNote = async(req: Request, res: Response) => {
         try {
             const id = req.id as string;
-            const { note } = req.body
+            const { heading, description } = req.body
+            const note = {
+                heading,
+                description,
+            }
             const response = await this.noteService.add(id, note);
             if(!response) {
                 res
@@ -49,6 +53,7 @@ export class NoteController {
             .json({
                 message : "Added complete successfully",
                 success : true,
+                note : response
             })
 
         } catch (error: any) {

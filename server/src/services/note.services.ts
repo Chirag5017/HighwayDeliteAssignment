@@ -9,17 +9,27 @@ export class NoteService {
 
     
    async show(id: string) {
-        if (!id) {
-            throw new Error("User ID not found");
-        }
+    if (!id) {
+        throw new Error("User ID not found");
+    }
 
-        const user = await this.userRepo.findById(id)
-        if (!user || !user.allNotes) {
-            throw new Error("User or notes not found");
-        }
-        console.log(user.allNotes);
-        return user.allNotes;
-  }
+    // populate allNotes to fetch full note objects instead of just ObjectIds
+    const user = await this.userRepo.findByIdWithNotes(id);
+    if (!user || !user.allNotes) {
+        throw new Error("User or notes not found");
+    }
+
+    // cast populated notes properly
+    const notes = user.allNotes.map((note: any) => ({
+        _id: note._id,
+        heading: note.heading,
+        description: note.description
+    }));
+
+    console.log(notes);
+    return notes;
+}
+
 
   async add(id: string, note: notesPartialInterface) {
         const user = await this.userRepo.findById(id);
@@ -39,7 +49,7 @@ export class NoteService {
 
         user.allNotes?.push(savedNote._id as mongoose.Types.ObjectId);
         await user.save(); 
-
+        console.log(savedNote);
         return savedNote;
 }
 

@@ -13,7 +13,7 @@ const router = Router();
 
 router.use(authentication.authenticateUser);
 router.route("/show-all").get(controller.showAll);
-router.route("/addNote").get(controller.addNote);
-router.route("/deleteNote").get(controller.deleteNote);
+router.route("/addNote").post(controller.addNote);
+router.route("/deleteNote").post(controller.deleteNote);
 
 export default router;

@@ -15,6 +15,10 @@ export class UserRepository {
         return await User.findById({_id})
     }
 
+    async findByIdWithNotes(_id: string): Promise<userInterface | null> {
+        return await User.findById(_id).populate("allNotes");
+    }
+
     async getAll() : Promise<userInterface[]> {
         return await User.find();
     } 
