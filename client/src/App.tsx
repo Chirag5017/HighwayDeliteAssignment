@@ -6,12 +6,17 @@ import { SignUp } from './components/SignUp';
 import { SignIn } from './components/SignIn';
 import { OTPVerification } from './components/OTPVerification';
 import { Toaster } from 'react-hot-toast';
+import { Loader } from './components/Loader';
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  return user ? <>{children}</> : <Navigate to="/signup" replace />;
+  const { user, loading } = useAuth();
+
+  if (loading) return <Loader/> // ✅ don't redirect until we check
+
+  return user ? <>{children}</> : <Navigate to="/signin" replace />;
 }
+
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();

@@ -11,8 +11,8 @@ export class UserRepository {
         return await newUser.save();
     }
 
-    async findById(id : string) : Promise<userInterface | null> {
-        return await User.findById({ id })
+    async findById(_id : string) : Promise<userInterface | null> {
+        return await User.findById({_id})
     }
 
     async getAll() : Promise<userInterface[]> {

@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -19,6 +19,7 @@ interface AuthContextType {
   signIn: (email: string) => void;
   verifyOTP: (otp: string) => void;
   logout: () => void;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,52 +29,70 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [signUpData, setSignUpData] = useState<Partial<User>>({});
   const [OTP, setOTP] = useState("");
   const [flag, setFlag] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
+useEffect(() => {
+  const checkAuth = async () => {
+    try {
+      const res = await axios.get(`${Backend_Url}/user/me`, { withCredentials: true });
+      if (res.data.success) {
+        setUser(res.data.user);
+      } else {
+        setUser(null);
+      }
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+  checkAuth();
+}, []);
+
+
   const signUp = async (userData: User) => {
     setSignUpData(userData);
-    setFlag("signup")
+    setFlag("signup");
     const response = await sendOTP(userData.email, "user/sign-up/send-otp");
-    if(!response) return;
-    navigate('/otp');
+    if (!response) return;
+    navigate("/otp");
   };
 
   const signIn = async (email: string) => {
     setSignUpData({ email });
-    setFlag("signin")
-    const response = await sendOTP(email, "user/sign-in/send-otp"); 
-    if(!response) return;
-    navigate('/otp');
+    setFlag("signin");
+    const response = await sendOTP(email, "user/sign-in/send-otp");
+    if (!response) return;
+    navigate("/otp");
   };
 
-  const sendOTP = async (email: string | undefined, URL : string) : Promise<boolean> => {
+  const sendOTP = async (email: string | undefined, URL: string): Promise<boolean> => {
     if (!email) {
-      console.error("Email is missing for OTP sending");
+      toast.error("Email is missing");
       return false;
     }
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
     setOTP(otp);
 
     try {
-      const result = await axios.post(`${Backend_Url}/${URL}`, {
-        email: email,
-        otp: otp,
-      });
+      const result = await axios.post(
+        `${Backend_Url}/${URL}`,
+        { email, otp },
+        { withCredentials: true }
+      );
 
       const response = result.data;
       if (response.success) {
-        console.log("OTP sent to:", email);
-        toast.success(response.message)
+        toast.success(response.message);
         return true;
       } else {
-        console.log("Error in OTP sending");
-        toast.error(response.message)
+        toast.error(response.message);
         return false;
       }
-    } catch (err : any) {
-      console.error("Error while sending OTP:", err);
-      toast.error(err.response.data.message)
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Server error");
       return false;
     }
   };
@@ -82,31 +101,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (otp === OTP) {
       setUser(signUpData as User);
       const URL = flag === "signin" ? "user/sign-in" : "user/sign-up";
-      const result = await axios.post(`${Backend_Url}/${URL}`, {
-        email : signUpData.email,
-        dob: signUpData.dateOfBirth,
-        name:signUpData.name
-      });
 
-      const response = await result.data;
-       if (response.success) {
-        toast.success(response.message)
-        navigate('/dashboard');
-      } else {
-        toast.error(response.message)
+      try {
+        const result = await axios.post(
+          `${Backend_Url}/${URL}`,
+          {
+            email: signUpData.email,
+            dob: signUpData.dateOfBirth,
+            name: signUpData.name,
+          },
+          { withCredentials: true } // ✅ set cookie
+        );
+
+        const response = result.data;
+        if (response.success) {
+          toast.success(response.message);
+          setUser(response.user); // ✅ take user from backend
+          navigate("/dashboard");
+        } else {
+          toast.error(response.message);
+          navigate(`/${flag}`);
+        }
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || "Server error");
         navigate(`/${flag}`);
       }
-
     } else {
-      toast.error('Invalid OTP. Please try again.');
+      toast.error("Invalid OTP. Please try again.");
       navigate(`/${flag}`);
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await axios.post(`${Backend_Url}/user/logout`, {}, { withCredentials: true });
     setUser(null);
     setSignUpData({});
-    navigate('/signup');
+    navigate("/signin");
   };
 
   return (
@@ -119,6 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         verifyOTP,
         logout,
+        loading,
       }}
     >
       {children}
@@ -129,7 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

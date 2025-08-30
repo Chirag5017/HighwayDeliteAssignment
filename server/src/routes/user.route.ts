@@ -17,8 +17,12 @@ router.route("/sign-up/send-otp").post(controller.sentOtpToUserForSignUp);
 router.route("/sign-in/send-otp").post(controller.sentOtpToUserForSignIn);
 
 router.use(userAuthentication.authenticateUser);
-router.get("/get", (req : Request, res : Response) => {
-    res.send(req.id);
-})
+router.route("/me").get(controller.dashboard);
+
+router.post("/logout", (req: Request, res: Response) => {
+  res.clearCookie("token", { httpOnly: true, sameSite: "strict", secure: false });
+  res.json({ success: true, message: "Logged out successfully" });
+});
+
 
 export default router;

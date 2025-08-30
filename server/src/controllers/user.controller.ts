@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/user.services";
+import { userRepo } from "../app";
 
 interface cookieInterface {
   httpOnly: boolean,
@@ -80,5 +81,25 @@ export class UserController {
         }catch(error : any){
             res.status(400).json({ error: "Our server is down, please try again later" });
         }
+    }
+
+    dashboard = async (req : Request, res : Response) => {
+        const id = req.id;
+        if(!id) return res.status(401).json({
+            message : "User is not Authenticated",
+            success : false
+        })
+        const user = await userRepo.findById(id);
+
+        if(!user) return res.status(400).json({
+            message : "Invalid Details",
+            success : false
+        })
+
+        return res.status(200).json({
+            message : {},
+            success : true,
+            user
+        })
     }
 }
