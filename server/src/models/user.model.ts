@@ -4,7 +4,7 @@ export interface userInterface extends Document {
   name: string,
   email: string,
   dob: string,
-  allNotes?: mongoose.Types.ObjectId,
+  allNotes?: mongoose.Types.ObjectId[],
 }
 
 export interface userPartialInterface {
