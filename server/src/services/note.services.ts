@@ -8,8 +8,7 @@ export class NoteService {
     constructor(private noteRepo: NoteRepository, private userRepo: UserRepository) {};
 
     
-   async showAll(req: Request) {
-        const id = req.id;
+   async show(id: string) {
         if (!id) {
             throw new Error("User ID not found");
         }
@@ -44,7 +43,7 @@ export class NoteService {
         return savedNote;
 }
 
-async deleteNotes(userId: string, noteId: string) {
+async delete(userId: string, noteId: string) {
         const user = await this.userRepo.findById(userId);
         if (!user) {
             throw new Error("User not found");
