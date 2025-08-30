@@ -1,10 +1,11 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Dashboard } from './components/Dashboard';
-import { AuthProvider, useAuth } from './context/AuthCOntext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { SignUp } from './components/SignUp';
 import { SignIn } from './components/SignIn';
 import { OTPVerification } from './components/OTPVerification';
+import { Toaster } from 'react-hot-toast';
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -19,6 +20,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 
 function AppRoutes() {
   return (
+    <>
     <Routes>
       <Route 
         path="/signup" 
@@ -54,6 +56,11 @@ function AppRoutes() {
       />
       <Route path="/" element={<Navigate to="/signup" replace />} />
     </Routes>
+    <Toaster
+        position="top-center"
+        reverseOrder={false}
+      />
+    </>
   );
 }
 

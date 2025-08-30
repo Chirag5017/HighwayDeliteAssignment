@@ -1,5 +1,5 @@
 import { LogOut } from 'lucide-react';
-import { useAuth } from '../context/AuthCOntext';
+import { useAuth } from '../context/AuthContext';
 import { Logo } from './Logo';
 
 export function Dashboard() {

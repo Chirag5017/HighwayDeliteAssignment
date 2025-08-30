@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthCOntext';
+import { useAuth } from '../context/AuthContext';
 import { Logo } from './Logo';
 import { BackGround } from './BackGround';
 

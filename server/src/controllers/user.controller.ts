@@ -38,7 +38,7 @@ export class UserController {
 
     signin = async (req : Request, res : Response) => {
         try {
-            const { email } = req.body;
+            const {name, email, dob} = req.body;
            const result = await this.userService.signIn(res, email);
            res
             .status(201)
@@ -61,7 +61,7 @@ export class UserController {
             if(result) {
                 res.status(400).json({message : result?.message , success : false});
             }
-            res.status(200).json({message : "" , success : true});
+            res.status(200).json({message : "OTP Sent" , success : true});
         }catch(error : any){
             res.status(400).json({ error: "Our server is down, please try again later" });
         }
@@ -76,7 +76,7 @@ export class UserController {
             if(result) {
                 res.status(400).json({message : result?.message , success : false});
             }
-            res.status(200).json({message : "" , success : true});
+            res.status(200).json({message : "OTP Sent" , success : true});
         }catch(error : any){
             res.status(400).json({ error: "Our server is down, please try again later" });
         }
