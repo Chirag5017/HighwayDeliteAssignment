@@ -24,4 +24,34 @@ export class UserController {
             res.status(400).json({ error: error.message });
         }
     }
+
+    sentOtpToUserForSignUp = async (req : Request, res : Response) => {
+        const { otp, email } = req.body;
+        const subject = "OTP for Email Verification";
+        const message = `Here is your otp for email verification : ${otp}`;
+        try{
+            const result = await this.userService.sendOtpEmailForSignUp(email, subject, message);
+            if(result) {
+                res.status(400).json({message : result?.message , success : false});
+            }
+            res.status(200).json({message : "" , success : true});
+        }catch(error : any){
+            res.status(400).json({ error: "Our server is down, please try again later" });
+        }
+    }
+
+    sentOtpToUserForSignIn = async (req : Request, res : Response) => {
+        const { otp, email } = req.body;
+        const subject = "OTP for Email Verification";
+        const message = `Here is your otp for email verification : ${otp}`;
+        try{
+            const result = await this.userService.sendOtpEmailForSignIn(email, subject, message);
+            if(result) {
+                res.status(400).json({message : result?.message , success : false});
+            }
+            res.status(200).json({message : "" , success : true});
+        }catch(error : any){
+            res.status(400).json({ error: "Our server is down, please try again later" });
+        }
+    }
 }

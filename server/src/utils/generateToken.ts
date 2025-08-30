@@ -18,6 +18,8 @@ export const setCookie : cookieInterface = {
 }
 
 export class GenerateToken {
+
+    
     generateToken(res : Response, user : userInterface, message : string) {
         const payload = { id: user._id, email: user.email };
         const token = jwt.sign(
