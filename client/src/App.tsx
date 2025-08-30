@@ -7,6 +7,7 @@ import { SignIn } from './components/SignIn';
 import { OTPVerification } from './components/OTPVerification';
 import { Toaster } from 'react-hot-toast';
 import { Loader } from './components/Loader';
+import { NotesProvider } from './context/NoteContext';
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -72,7 +73,9 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <AppRoutes />
+       <NotesProvider>
+          <AppRoutes />
+       </NotesProvider>
     </AuthProvider>
   );
 }
