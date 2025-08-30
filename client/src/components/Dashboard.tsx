@@ -23,7 +23,7 @@ export function Dashboard() {
           </div>
           <button 
             onClick={logout}
-            className="text-blue-500 text-sm font-medium"
+            className="text-blue-500 text-sm cursor-pointer font-medium"
           >
             Sign Out
           </button>
@@ -32,7 +32,7 @@ export function Dashboard() {
         <div className="px-4 py-6 space-y-6">
           {/* Welcome Card */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">
+            <h2 className="text-xl font-semibold cursor-pointer text-gray-900 mb-3">
               Welcome, Jonas Kahnwald !
             </h2>
             <p className="text-sm text-gray-600">
@@ -41,7 +41,7 @@ export function Dashboard() {
           </div>
 
           {/* Create Note Button */}
-          <button className="w-full bg-blue-500 text-white py-4 rounded-xl font-medium text-base">
+          <button className="w-full bg-blue-500 text-white cursor-pointer py-4 rounded-xl font-medium text-base">
             Create Note
           </button>
 
@@ -55,7 +55,7 @@ export function Dashboard() {
                   className="bg-white rounded-xl p-4 shadow-sm flex items-center justify-between"
                 >
                   <span className="text-base text-gray-900">{note.title}</span>
-                  <button className="text-gray-400 hover:text-gray-600">
+                  <button className="text-gray-400 cursor-pointer hover:text-gray-600">
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
@@ -83,7 +83,7 @@ export function Dashboard() {
             </div>
             <button 
               onClick={logout}
-              className="text-blue-500 text-base font-medium hover:text-blue-600"
+              className="text-blue-500 text-base cursor-pointer font-medium hover:text-blue-600"
             >
               Sign Out
             </button>
@@ -101,7 +101,7 @@ export function Dashboard() {
             </div>
 
             {/* Create Note Button */}
-            <button className="bg-blue-500 text-white py-4 px-8 rounded-xl font-medium text-base hover:bg-blue-600 transition-colors">
+            <button className="bg-blue-500 text-white cursor-pointer py-4 px-8 rounded-xl font-medium text-base hover:bg-blue-600 transition-colors">
               Create Note
             </button>
 
@@ -115,7 +115,7 @@ export function Dashboard() {
                     className="bg-white rounded-xl p-6 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow"
                   >
                     <span className="text-lg text-gray-900">{note.title}</span>
-                    <button className="text-gray-400 hover:text-gray-600">
+                    <button className="text-gray-400 cursor-pointer hover:text-gray-600">
                       <Trash2 className="w-6 h-6" />
                     </button>
                   </div>

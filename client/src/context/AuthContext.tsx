@@ -6,20 +6,21 @@ import toast from "react-hot-toast";
 const Backend_Url = import.meta.env.VITE_BACKEND_URL;
 
 interface User {
-  name: string;
-  email?: string;
-  dateOfBirth?: string;
+  name: string,
+  email?: string,
+  dateOfBirth?: string,
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: User | null,
   signUpData: Partial<User>;
-  setSignUpData: (data: Partial<User>) => void;
-  signUp: (userData: User) => void;
-  signIn: (email: string) => void;
-  verifyOTP: (otp: string) => void;
-  logout: () => void;
-  loading: boolean;
+  setSignUpData: (data: Partial<User>) => void,
+  signUp: (userData: User) => Promise<boolean> ,
+  signIn: (email: string) => Promise<boolean> ,
+  verifyOTP: (otp: string) => void,
+  logout: () => void,
+  loading: boolean,
+  flag: string,
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -52,20 +53,22 @@ useEffect(() => {
 }, []);
 
 
-  const signUp = async (userData: User) => {
+  const signUp = async (userData: User) : Promise<boolean> => {
     setSignUpData(userData);
     setFlag("signup");
     const response = await sendOTP(userData.email, "user/sign-up/send-otp");
-    if (!response) return;
+    if (!response) return false;
     navigate("/otp");
+    return true;
   };
 
-  const signIn = async (email: string) => {
+  const signIn = async (email: string) : Promise<boolean> => {
     setSignUpData({ email });
     setFlag("signin");
     const response = await sendOTP(email, "user/sign-in/send-otp");
-    if (!response) return;
+    if (!response) return false;
     navigate("/otp");
+    return true;
   };
 
   const sendOTP = async (email: string | undefined, URL: string): Promise<boolean> => {
@@ -110,13 +113,13 @@ useEffect(() => {
             dob: signUpData.dateOfBirth,
             name: signUpData.name,
           },
-          { withCredentials: true } // ✅ set cookie
+          { withCredentials: true }
         );
 
         const response = result.data;
         if (response.success) {
           toast.success(response.message);
-          setUser(response.user); // ✅ take user from backend
+          setUser(response.user);
           navigate("/dashboard");
         } else {
           toast.error(response.message);
@@ -150,6 +153,7 @@ useEffect(() => {
         verifyOTP,
         logout,
         loading,
+        flag
       }}
     >
       {children}

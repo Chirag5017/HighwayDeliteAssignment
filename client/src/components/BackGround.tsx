@@ -1,11 +1,9 @@
 export function BackGround() {
   return (
-    <div className="hidden md:flex md:w-1/2 relative overflow-hidden rounded-r-3xl">
-      <img
-        src="https://images.pexels.com/photos/1323712/pexels-photo-1323712.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-        alt="Abstract blue waves"
-        className="w-full h-full object-cover"
-      />
-    </div>
+    <img
+      src="https://res.cloudinary.com/dtfuu1dar/image/upload/v1756562206/7b63f1a45bc23337ff246ae8162bec8fa9d7190d_he3qbl.jpg"
+      alt="Abstract blue waves"
+      className="w-full h-full rounded-3xl object-cover"
+    />
   );
 }

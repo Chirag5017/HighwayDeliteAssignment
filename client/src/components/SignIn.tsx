@@ -16,8 +16,8 @@ export function SignIn() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <div className="w-full md:w-1/2 flex flex-col justify-center px-6 md:px-16 lg:px-20">
+    <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 lg:px-12 xl:px-16 py-12">
         <div className="max-w-md w-full mx-auto md:mx-0">
           <Logo />
           
@@ -28,7 +28,7 @@ export function SignIn() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm text-blue-500 mb-2">Email</label>
+              <label className="block text-sm text-black mb-2">Email</label>
               <input
                 type="email"
                 value={email}
@@ -51,7 +51,7 @@ export function SignIn() {
 
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-600 transition-colors"
+              className="w-full bg-blue-500 text-white py-3 px-4 cursor-pointer rounded-lg font-medium hover:bg-blue-600 transition-colors"
             >
               Continue
             </button>
@@ -66,7 +66,9 @@ export function SignIn() {
         </div>
       </div>
 
-      <BackGround />
+     <div className="hidden lg:flex items-center justify-center p-8 lg:w-1/2">
+                  <BackGround />
+                </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { Logo } from './Logo';
 import { BackGround } from './BackGround';
 
 export function OTPVerification() {
-  const { verifyOTP, signUpData } = useAuth();
+  const { verifyOTP, signUpData, flag } = useAuth();
   const [otp, setOtp] = useState('');
   const [showOtp, setShowOtp] = useState(false);
 
@@ -18,36 +18,36 @@ export function OTPVerification() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <div className="w-full md:w-1/2 flex flex-col justify-center px-6 md:px-16 lg:px-20">
+    <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 lg:px-12 xl:px-16 py-12">
         <div className="max-w-md w-full mx-auto md:mx-0">
           <Logo />
           
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign up</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{flag === "signup" ? "Sign up" : "Sign in"}</h1>
             <p className="text-gray-500">Sign up to enjoy the feature of HD</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
+            { flag === "signup" && <div>
               <label className="block text-sm text-gray-500 mb-2">Your Name</label>
               <input
                 type="text"
                 value={signUpData.name || ''}
                 disabled
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-500"
+                className="w-full px-4 py-3 border border-blue-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-blue-50/30"
               />
-            </div>
+            </div> }
 
-            <div>
+           { flag === "signup" && <div>
               <label className="block text-sm text-gray-500 mb-2">Date of Birth</label>
               <input
                 type="text"
                 value={signUpData.dateOfBirth || ''}
                 disabled
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-500"
+                className="w-full px-4 py-3 border border-blue-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-blue-50/30"
               />
-            </div>
+            </div> }
 
             <div>
               <label className="block text-sm text-gray-500 mb-2">Email</label>
@@ -55,7 +55,7 @@ export function OTPVerification() {
                 type="email"
                 value={signUpData.email || ''}
                 disabled
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-500"
+                className="w-full px-4 py-3 border border-blue-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-blue-50/30"
               />
             </div>
 
@@ -66,13 +66,13 @@ export function OTPVerification() {
                   type={showOtp ? "text" : "password"}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+                  className="w-full px-4 py-3 border border-blue-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-blue-50/30"
                   placeholder="Enter OTP"
                 />
                 <button
                   type="button"
                   onClick={() => setShowOtp(!showOtp)}
-                  className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-3.5 text-gray-400 cursor-pointer hover:text-gray-600"
                 >
                   {showOtp ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -81,22 +81,31 @@ export function OTPVerification() {
 
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-600 transition-colors"
+              className="w-full bg-blue-500 text-white py-3 cursor-pointer px-4 rounded-lg font-medium hover:bg-blue-600 transition-colors"
             >
-              Sign up
+             {flag === "signup" ? "Sign up" : "Sign in"}
             </button>
           </form>
 
           <p className="text-center text-gray-500 mt-6">
-            Already have an account?{' '}
-            <Link to="/signin" className="text-blue-500 hover:underline">
+            {flag === 'signup' ? " Already have an account?" : "Dont't have account?"}{' '}
+
+           { 
+           flag === "signup" ?
+            (<Link to="/signin" className="text-blue-500 hover:underline">
               Sign in
-            </Link>
+            </Link>) :
+              (<Link to="/signup" className="text-blue-500 hover:underline">
+              Sign up
+            </Link>)
+            }
           </p>
         </div>
       </div>
 
-      <BackGround />
+     <div className="hidden lg:flex items-center justify-center p-8 lg:w-1/2">
+             <BackGround />
+           </div>
     </div>
   );
 }
