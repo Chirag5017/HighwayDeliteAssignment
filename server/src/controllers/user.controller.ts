@@ -1,6 +1,20 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/user.services";
 
+interface cookieInterface {
+  httpOnly: boolean,
+  sameSite: "strict",
+  secure: boolean,
+  maxAge: number,
+}
+
+export const setCookie : cookieInterface = {
+  httpOnly: true,
+  sameSite: "strict",
+  secure: false,
+  maxAge: 24 * 60 * 60 * 1000,
+}
+
 export class UserController {
     constructor(private userService : UserService) {}
 
@@ -9,7 +23,13 @@ export class UserController {
             const {name, email, dob} = req.body;
             const result = await this.userService.signUp(res, name, email, dob);
             console.log(result)
-            res.status(result.success ? 201 : 400).json({result});
+            res
+            .status(201)
+            .cookie("token", result.token)
+            .json({
+                message : result.message,
+                success : result.success
+            })
         } catch (error : any)  {
             console.log(error);
             res.status(400).json({ error: error.message });
@@ -19,7 +39,14 @@ export class UserController {
     signin = async (req : Request, res : Response) => {
         try {
             const { email } = req.body;
-            await this.userService.signIn(res, email);
+           const result = await this.userService.signIn(res, email);
+           res
+            .status(201)
+            .cookie("token", result.token)
+            .json({
+                message : result.message,
+                success : result.success
+            })
         } catch (error : any) {
             res.status(400).json({ error: error.message });
         }

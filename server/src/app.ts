@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+
 import { GenerateToken } from "./utils/generateToken";
 import { UserRepository } from "./repositories/user.repository";
 import { SendMail } from "./utils/sendEmail";
@@ -10,6 +12,7 @@ app.use(cors({
     origin : process.env.FRONTEND_URL,
     credentials : true
 }))
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 

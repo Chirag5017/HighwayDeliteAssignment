@@ -16,12 +16,13 @@ export class UserService {
     const existingUser = await this.userRepo.findByEmail(email);
 
     if (existingUser) {
-      // throw new Error("User already exists")
-      return {
-        success : false,
-        message : "User already exists"
-      }
-      
+      throw new Error("User already exists")
+      //  return  res
+      //       .status(400)
+      //       .json({
+      //           success : false,
+      //           message : "User already exists"
+      //       })
     }
 
     const newUser: userPartialInterface = {
@@ -30,26 +31,30 @@ export class UserService {
       dob,
     };
 
-    await this.userRepo.save(newUser);
+   const user =  await this.userRepo.save(newUser);
+    console.log(user);
+    
+    const token = this.genToken.generateToken(user)
 
     return {
       success: true,
-      message: "SignUp successful"
+      message: "SignUp successful",
+      token : token
     };
   }
 
   async signIn(res : Response, email : string) {
      const user = await this.userRepo.findByEmail(email);
      if(!user) {
-        return  res
-            .status(401)
-            .json({
-                success : false,
-                message : "Email not found"
-            })
+       throw new Error("User does not  exists")
      }
 
-     return this.genToken.generateToken(res, user, `Welcome ${user.name}`)
+     const token = this.genToken.generateToken(user);
+     return {
+        success : true,
+        message : `Welcome ${user.name}`,
+        token : token
+     }
   }
 
   async sendOtpEmailForSignUp(email : string, subject : string, message : string) {
