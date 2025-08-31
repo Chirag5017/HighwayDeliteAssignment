@@ -36,7 +36,9 @@ export function Dashboard() {
       <div className="sm:hidden">
         <div className="bg-white px-4 py-3 flex items-center justify-between border-b border-gray-100">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-blue-500" />
+            <div className="p-2 bg-blue-100 rounded-full">
+              <Sparkles className="w-5 h-5 text-blue-500" />
+            </div>
             <span className="text-lg font-medium text-gray-900">Dashboard</span>
           </div>
           <button onClick={signOut} className="text-blue-500 text-sm cursor-pointer font-medium">
@@ -107,7 +109,9 @@ export function Dashboard() {
         <div className="max-w-4xl mx-auto">
           <div className="bg-white px-8 py-6 flex rounded-xl items-center justify-between border-b border-gray-100">
             <div className="flex items-center gap-3">
-              <Sparkles className="w-5 h-5 text-blue-500" />
+              <div className="p-2 bg-blue-100 rounded-full">
+                      <Sparkles className="w-5 h-5 text-blue-500" />
+                    </div>
               <span className="text-2xl  font-medium text-gray-900">Dashboard</span>
             </div>
             <button

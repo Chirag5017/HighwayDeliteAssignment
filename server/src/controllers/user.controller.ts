@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/user.services";
 import { userRepo } from "../app";
+import { validateEmail } from "../utils/validateEmail";
 
 interface cookieInterface {
   httpOnly: boolean,
@@ -22,8 +23,17 @@ export class UserController {
      signup = async (req : Request, res : Response) => {
         try {
             const {name, email, dob} = req.body;
+            const response = await validateEmail(email);
+            if(!response.success) {
+                res
+                .status(401)
+                .json({
+                    message: response.message,
+                    success: response.success
+                })
+            }
             const result = await this.userService.signUp(res, name, email, dob);
-            console.log(result)
+            // console.log(result)
             res
             .status(201)
             .cookie("token", result.token)
@@ -41,6 +51,15 @@ export class UserController {
     signin = async (req : Request, res : Response) => {
         try {
             const {name, email, dob, checked} = req.body;
+            const response = await validateEmail(email);
+            if(!response.success) {
+                res
+                .status(401)
+                .json({
+                    message: response.message,
+                    success: response.success
+                })
+            }
            const result = await this.userService.signIn(res, email, checked);
            res
             .status(201)
@@ -57,6 +76,15 @@ export class UserController {
 
     sentOtpToUserForSignUp = async (req : Request, res : Response) => {
         const { otp, email } = req.body;
+        const response = await validateEmail(email);
+            if(!response.success) {
+                res
+                .status(401)
+                .json({
+                    message: response.message,
+                    success: response.success
+                })
+            }
         const subject = "OTP for Email Verification";
         const message = `Here is your otp for email verification : ${otp}`;
         try{
@@ -72,6 +100,15 @@ export class UserController {
 
     sentOtpToUserForSignIn = async (req : Request, res : Response) => {
         const { otp, email } = req.body;
+        const response = await validateEmail(email);
+            if(!response.success) {
+                res
+                .status(401)
+                .json({
+                    message: response.message,
+                    success: response.success
+                })
+            }
         const subject = "OTP for Email Verification";
         const message = `Here is your otp for email verification : ${otp}`;
         try{
@@ -103,5 +140,10 @@ export class UserController {
             success : true,
             user
         })
+    }
+
+    logout = (req: Request, res: Response) => {
+        res.clearCookie("token", { httpOnly: true, sameSite: "strict", secure: false });
+        res.json({ success: true, message: "Logged out successfully" });
     }
 }

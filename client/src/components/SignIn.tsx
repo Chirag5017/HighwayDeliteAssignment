@@ -15,8 +15,12 @@ export function SignIn() {
     e.preventDefault();
     if (email !== "") {
        setIsGetOtpLoading(true);
-      const response = await signIn(email, checked);
-      if(!response) setEmail("");
+       const response = await signIn(email, checked);
+       if(!response) {
+        setIsGetOtpLoading(false);
+        setEmail("");
+        
+      }
     } else {
       toast.error("Email is missing");
     }
@@ -53,7 +57,7 @@ export function SignIn() {
                 className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
               />
               <label htmlFor="remember" className="ml-2 text-gray-500 block text-xs font-medium">
-                Keep me signed in
+                Keep me logged in
               </label>
             </div>
 

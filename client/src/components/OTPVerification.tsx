@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Logo } from './Logo';
 import { BackGround } from './BackGround';
+import toast from 'react-hot-toast';
 
 export function OTPVerification() {
-  const { verifyOTP, signUpData, flag } = useAuth();
+  const { verifyOTP, signUpData, flag , sendOTP, isGetOtpLoading, setIsGetOtpLoading} = useAuth();
   const [otp, setOtp] = useState('');
   const [showOtp, setShowOtp] = useState(false);
 
@@ -14,6 +15,8 @@ export function OTPVerification() {
     e.preventDefault();
     if (otp) {
       verifyOTP(otp);
+    } else {
+       toast.error("Please fill the OTP field")
     }
   };
 
@@ -78,7 +81,24 @@ export function OTPVerification() {
                 </button>
               </div>
             </div>
-
+            
+            {
+              flag === 'signin' && (
+                <button
+                disabled={isGetOtpLoading}
+                onClick={() => {
+                  setIsGetOtpLoading(true);
+                  sendOTP(signUpData.email, "user/sign-in/send-otp")
+                }}
+                className="text-blue-500 text-sm cursor-pointer underline"
+                >
+                {isGetOtpLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin text-blue" />
+                ) : (
+                  "Resend OTP"
+                  )}
+              </button>
+            )}
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-3 cursor-pointer px-4 rounded-lg font-medium hover:bg-blue-600 transition-colors"

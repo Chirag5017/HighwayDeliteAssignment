@@ -24,6 +24,7 @@ export function SignUp() {
       toast.error("Please fill all the fields")
     }
     if(response === false) {
+      setIsGetOtpLoading(false);
        setFormData({
         name: '',
         dateOfBirth: '',

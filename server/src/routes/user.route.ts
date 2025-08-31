@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 
 import { UserService } from "../services/user.services";
 import { generateToken, sendOtpEmail, userRepo } from "../app";
@@ -18,11 +18,7 @@ router.route("/sign-in/send-otp").post(controller.sentOtpToUserForSignIn);
 
 router.use(userAuthentication.authenticateUser);
 router.route("/me").get(controller.dashboard);
-
-router.post("/logout", (req: Request, res: Response) => {
-  res.clearCookie("token", { httpOnly: true, sameSite: "strict", secure: false });
-  res.json({ success: true, message: "Logged out successfully" });
-});
+router.route("/logout").post(controller.logout);
 
 
 export default router;

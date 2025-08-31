@@ -9,6 +9,7 @@ interface User {
   name: string,
   email?: string,
   dateOfBirth?: string,
+  checked?: boolean,
 }
 
 interface AuthContextType {
@@ -24,6 +25,7 @@ interface AuthContextType {
   flag: string,
   isGetOtpLoading: boolean,
   setIsGetOtpLoading : (loading: boolean) => void,
+  sendOTP: (email: string | undefined, url: string) => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -62,22 +64,22 @@ useEffect(() => {
   const signUp = async (userData: User) : Promise<boolean> => {
     setSignUpData(userData);
     setFlag("signup");
-    const response = await sendOTP(userData.email, "user/sign-up/send-otp", true);
+    const response = await sendOTP(userData.email, "user/sign-up/send-otp");
     if (!response) return false;
     navigate("/otp");
     return true;
   };
 
   const signIn = async (email: string, checked: boolean) : Promise<boolean> => {
-    setSignUpData({ email });
+    setSignUpData({ email, checked });
     setFlag("signin");
-    const response = await sendOTP(email, "user/sign-in/send-otp", checked);
+    const response = await sendOTP(email, "user/sign-in/send-otp");
     if (!response) return false;
     navigate("/otp");
     return true;
   };
 
-  const sendOTP = async (email: string | undefined, URL: string, checked: boolean): Promise<boolean> => {
+  const sendOTP = async (email: string | undefined, URL: string): Promise<boolean> => {
     if (!email) {
       toast.error("Email is missing");
       return false;
@@ -89,18 +91,18 @@ useEffect(() => {
     try {
       const result = await axios.post(
         `${Backend_Url}/${URL}`,
-        { email, otp, checked },
+        { email, otp },
         { withCredentials: true }
       );
 
       const response = result.data;
       if (response.success) {
         toast.success(response.message);
-         setIsGetOtpLoading(false);
-        return true;
-      } else {
-        toast.error(response.message);
-        return false;
+        setIsGetOtpLoading(false);
+         return true;
+        } else {
+          toast.error(response.message);
+          return false;
       }
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Server error");
@@ -120,6 +122,7 @@ useEffect(() => {
             email: signUpData.email,
             dob: signUpData.dateOfBirth,
             name: signUpData.name,
+            checked: signUpData.checked
           },
           { withCredentials: true }
         );
@@ -165,6 +168,7 @@ useEffect(() => {
         flag,
         isGetOtpLoading,
         setIsGetOtpLoading,
+        sendOTP
       }}
     >
       {children}
