@@ -18,6 +18,7 @@ export function SignUp() {
     e.preventDefault();
     let response : boolean | undefined;
     if (formData.name && formData.dateOfBirth && formData.email) {
+      console.log(typeof formData.dateOfBirth);
       setIsGetOtpLoading(true);
       response = await signUp(formData);
     } else {
@@ -60,13 +61,11 @@ export function SignUp() {
               <label className="block text-xs text-gray-500 mb-2 font-medium">Date of Birth</label>
               <div className="relative">
                 <input
-                  type="text"
-                  placeholder='11 December 1997'
+                  type="date"
                   value={formData.dateOfBirth}
                   onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                   className="w-full px-4 py-3 border border-blue-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-blue-50/30"
                 />
-                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               </div>
             </div>
 
