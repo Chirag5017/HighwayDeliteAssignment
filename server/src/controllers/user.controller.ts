@@ -40,8 +40,8 @@ export class UserController {
 
     signin = async (req : Request, res : Response) => {
         try {
-            const {name, email, dob} = req.body;
-           const result = await this.userService.signIn(res, email);
+            const {name, email, dob, checked} = req.body;
+           const result = await this.userService.signIn(res, email, checked);
            res
             .status(201)
             .cookie("token", result.token)

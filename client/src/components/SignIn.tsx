@@ -3,15 +3,19 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Logo } from './Logo';
 import { BackGround } from './BackGround';
+import toast from 'react-hot-toast';
 
 export function SignIn() {
   const { signIn } = useAuth();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
+  const [checked, setChecked] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      signIn(email);
+    if (email !== "") {
+      signIn(email, checked);
+    } else {
+      toast.error("Email is missing");
     }
   };
 
@@ -42,6 +46,7 @@ export function SignIn() {
               <input
                 type="checkbox"
                 id="remember"
+                onChange={(e) => setChecked(e.target.checked)}
                 className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
               />
               <label htmlFor="remember" className="ml-2 text-sm text-gray-500">

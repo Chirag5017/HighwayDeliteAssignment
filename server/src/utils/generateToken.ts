@@ -1,4 +1,3 @@
-import { Response } from "express";
 import jwt, { Secret, SignOptions } from "jsonwebtoken";
 import { userInterface } from "../models/user.model";
 import { ENV } from "../config/env";
@@ -6,12 +5,12 @@ import { ENV } from "../config/env";
 export class GenerateToken {
 
     
-    generateToken(user : userInterface) {
+    generateToken(user : userInterface, checked: boolean) {
         const payload = { id: user._id, email: user.email };
         const token = jwt.sign(
             payload,
             ENV.TOKEN_SECRET as Secret, 
-            { expiresIn : ENV.TOKEN_EXPIRY } as SignOptions
+            { expiresIn : checked ? ENV.TOKEN_EXPIRY : "1d" } as SignOptions
         );
         
         return token;

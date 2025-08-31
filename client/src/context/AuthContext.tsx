@@ -16,7 +16,7 @@ interface AuthContextType {
   signUpData: Partial<User>;
   setSignUpData: (data: Partial<User>) => void,
   signUp: (userData: User) => Promise<boolean> ,
-  signIn: (email: string) => Promise<boolean> ,
+  signIn: (email: string, checked: boolean) => Promise<boolean> ,
   verifyOTP: (otp: string) => void,
   logout: () => void,
   loading: boolean,
@@ -57,34 +57,34 @@ useEffect(() => {
   const signUp = async (userData: User) : Promise<boolean> => {
     setSignUpData(userData);
     setFlag("signup");
-    const response = await sendOTP(userData.email, "user/sign-up/send-otp");
+    const response = await sendOTP(userData.email, "user/sign-up/send-otp", true);
     if (!response) return false;
     navigate("/otp");
     return true;
   };
 
-  const signIn = async (email: string) : Promise<boolean> => {
+  const signIn = async (email: string, checked: boolean) : Promise<boolean> => {
     setSignUpData({ email });
     setFlag("signin");
-    const response = await sendOTP(email, "user/sign-in/send-otp");
+    const response = await sendOTP(email, "user/sign-in/send-otp", checked);
     if (!response) return false;
     navigate("/otp");
     return true;
   };
 
-  const sendOTP = async (email: string | undefined, URL: string): Promise<boolean> => {
+  const sendOTP = async (email: string | undefined, URL: string, checked: boolean): Promise<boolean> => {
     if (!email) {
       toast.error("Email is missing");
       return false;
     }
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
-    console.log(otp);
+    // console.log(otp);
     setOTP(otp);
 
     try {
       const result = await axios.post(
         `${Backend_Url}/${URL}`,
-        { email, otp },
+        { email, otp, checked },
         { withCredentials: true }
       );
 
