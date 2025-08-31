@@ -5,14 +5,12 @@ import { validateEmail } from "../utils/validateEmail";
 
 interface cookieInterface {
   httpOnly: boolean,
-  sameSite: "strict",
   secure: boolean,
   maxAge: number,
 }
 
 export const setCookie : cookieInterface = {
   httpOnly: true,
-  sameSite: "strict",
   secure: false,
   maxAge: 24 * 60 * 60 * 1000,
 }
@@ -63,7 +61,7 @@ export class UserController {
            const result = await this.userService.signIn(res, email, checked);
            res
             .status(201)
-            .cookie("token", result.token,setCookie)
+            .cookie("token", result.token, setCookie)
             .json({
                  user : result.user,
                 message : result.message,
