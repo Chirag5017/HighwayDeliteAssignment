@@ -7,15 +7,15 @@ import { ENV } from "../config/env";
 interface cookieInterface {
   httpOnly: boolean,
   secure: boolean,
-  sameSite: "none",
+  sameSite: "none" | "lax",
   maxAge: number,
   path : "/"
 }
 
 export const setCookie: cookieInterface = {
   httpOnly: true,
+  sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
   secure: ENV.NODE_ENV === "production",
-  sameSite: "none",
   maxAge: 24 * 60 * 60 * 1000,
   path: "/", // ✅ cookie available for entire site
 };
