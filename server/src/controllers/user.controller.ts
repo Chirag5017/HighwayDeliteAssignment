@@ -9,16 +9,17 @@ interface cookieInterface {
   secure: boolean,
   sameSite: "none" | "lax",
   maxAge: number,
-  path : "/"
+  path: string
 }
 
 export const setCookie: cookieInterface = {
   httpOnly: true,
   sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
   secure: ENV.NODE_ENV === "production",
-  maxAge: 24 * 60 * 60 * 1000,
-  path: "/", // ✅ cookie available for entire site
+  maxAge: 24 * 60 * 60 * 1000, 
+  path: "/", 
 };
+
 
 export class UserController {
     constructor(private userService : UserService) {}
@@ -151,7 +152,7 @@ export class UserController {
             secure: ENV.NODE_ENV === "production",
             sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000,
-            path: "/", // ✅ cookie available for entire site
+            path: "/",
         });
         res.json({ success: true, message: "Logged out successfully" });
     }

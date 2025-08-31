@@ -5,27 +5,31 @@ import toast from "react-hot-toast";
 
 const Backend_Url = import.meta.env.VITE_BACKEND_URL;
 
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = Backend_Url;
+
 interface User {
-  name: string,
-  email?: string,
-  dateOfBirth?: string,
-  checked?: boolean,
+  name: string;
+  email?: string;
+  dateOfBirth?: string;
+  checked?: boolean;
 }
 
 interface AuthContextType {
-  user: User | null,
+  user: User | null;
   signUpData: Partial<User>;
-  setSignUpData: (data: Partial<User>) => void,
-  signUp: (userData: User) => Promise<boolean> ,
-  signIn: (email: string, checked: boolean) => Promise<boolean> ,
-  verifyOTP: (otp: string) => void,
-  logout: () => void,
-  loading: boolean,
-  setLoading: (loading: boolean) => void,
-  flag: string,
-  isGetOtpLoading: boolean,
-  setIsGetOtpLoading : (loading: boolean) => void,
-  sendOTP: (email: string | undefined, url: string) => Promise<boolean>
+  setSignUpData: (data: Partial<User>) => void;
+  signUp: (userData: User) => Promise<boolean>;
+  signIn: (email: string, checked: boolean) => Promise<boolean>;
+  verifyOTP: (otp: string) => void;
+  logout: () => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+  flag: string;
+  isGetOtpLoading: boolean;
+  setIsGetOtpLoading: (loading: boolean) => void;
+  sendOTP: (email: string | undefined, url: string) => Promise<boolean>;
+  verifyUserOtpLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,44 +41,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [flag, setFlag] = useState("");
   const [loading, setLoading] = useState(true);
   const [isGetOtpLoading, setIsGetOtpLoading] = useState(false);
-
+  const [verifyUserOtpLoading, setVerifyUserLoading] = useState(false);
 
   const navigate = useNavigate();
 
-useEffect(() => {
-  const checkAuth = async () => {
-    try {
-      const res = await axios.get(`${Backend_Url}/user/me`, { withCredentials: true });
-      if (res.data.success) {
-        setUser(res.data.user);
-        navigate("/dashboard");
-      } else {
-        navigate(`/${flag}`);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await axios.get("/user/me");
+        if (!cancelled && res.data?.success) {
+          setUser(res.data.user);
+        } else if (!cancelled) {
+          setUser(null);
+        }
+      } catch {
+        if (!cancelled) setUser(null);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    } catch {
-      navigate(`/${flag}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-  checkAuth();
-}, []);
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
-
-  const signUp = async (userData: User) : Promise<boolean> => {
+  const signUp = async (userData: User): Promise<boolean> => {
     setSignUpData(userData);
     setFlag("signup");
-    const response = await sendOTP(userData.email, "user/sign-up/send-otp");
-    if (!response) return false;
+    const ok = await sendOTP(userData.email, "user/sign-up/send-otp");
+    if (!ok) return false;
     navigate("/otp");
     return true;
   };
 
-  const signIn = async (email: string, checked: boolean) : Promise<boolean> => {
+  const signIn = async (email: string, checked: boolean): Promise<boolean> => {
     setSignUpData({ email, checked });
     setFlag("signin");
-    const response = await sendOTP(email, "user/sign-in/send-otp");
-    if (!response) return false;
+    const ok = await sendOTP(email, "user/sign-in/send-otp");
+    if (!ok) return false;
     navigate("/otp");
     return true;
   };
@@ -88,65 +91,58 @@ useEffect(() => {
     setOTP(otp);
 
     try {
-      const result = await axios.post(
-        `${Backend_Url}/${URL}`,
-        { email, otp },
-        { withCredentials: true }
-      );
-
-      const response = result.data;
-      if (response.success) {
-        toast.success(response.message);
+      const { data } = await axios.post(`/${URL}`, { email, otp });
+      if (data.success) {
+        toast.success(data.message);
         setIsGetOtpLoading(false);
-         return true;
-        } else {
-          toast.error(response.message);
-          return false;
+        return true;
+      } else {
+        toast.error(data.message);
+        return false;
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Server error");
+      toast.error(err?.response?.data?.message || "Server error");
       return false;
     }
   };
 
   const verifyOTP = async (otp: string) => {
-    if (otp === OTP) {
-      setUser(signUpData as User);
-      const URL = flag === "signin" ? "user/sign-in" : "user/sign-up";
-
-      try {
-        const result = await axios.post(
-          `${Backend_Url}/${URL}`,
-          {
-            email: signUpData.email,
-            dob: signUpData.dateOfBirth,
-            name: signUpData.name,
-            checked: signUpData.checked
-          },
-          { withCredentials: true }
-        );
-
-        const response = result.data;
-        if (response.success) {
-          toast.success(response.message);
-          setUser(response.user);
-          navigate("/dashboard");
-        } else {
-          toast.error(response.message);
-          navigate(`/${flag}`);
-        }
-      } catch (err: any) {
-        toast.error(err.response?.data?.message || "Server error");
-        navigate(`/${flag}`);
-      }
-    } else {
+    if (otp !== OTP) {
       toast.error("Invalid OTP. Please try again.");
       navigate(`/${flag}`);
+      return;
+    }
+
+    const URL = flag === "signin" ? "user/sign-in" : "user/sign-up";
+
+    setVerifyUserLoading(true);
+    try {
+      const { data } = await axios.post(`/${URL}`, {
+        email: signUpData.email,
+        dob: signUpData.dateOfBirth,
+        name: signUpData.name,
+        checked: signUpData.checked,
+      });
+
+      if (data.success) {
+        const me = await axios.get("/user/me");
+        if (me.data?.success) setUser(me.data.user);
+        toast.success(data.message);
+        navigate("/dashboard");
+      } else {
+        toast.error(data.message);
+        navigate(`/${flag}`);
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Server error");
+      navigate(`/${flag}`);
+    } finally {
+      setVerifyUserLoading(false);
     }
   };
 
   const logout = async () => {
-    await axios.post(`${Backend_Url}/user/logout`, {}, { withCredentials: true });
+    await axios.post("/user/logout", {});
     setUser(null);
     setSignUpData({});
     navigate("/signin");
@@ -167,7 +163,8 @@ useEffect(() => {
         flag,
         isGetOtpLoading,
         setIsGetOtpLoading,
-        sendOTP
+        sendOTP,
+        verifyUserOtpLoading,
       }}
     >
       {children}

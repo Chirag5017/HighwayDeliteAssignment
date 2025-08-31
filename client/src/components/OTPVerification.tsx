@@ -7,7 +7,7 @@ import { BackGround } from './BackGround';
 import toast from 'react-hot-toast';
 
 export function OTPVerification() {
-  const { verifyOTP, signUpData, flag , sendOTP, isGetOtpLoading, setIsGetOtpLoading} = useAuth();
+  const { verifyOTP, signUpData, flag , sendOTP, isGetOtpLoading, setIsGetOtpLoading, verifyUserOtpLoading} = useAuth();
   const [otp, setOtp] = useState('');
   const [showOtp, setShowOtp] = useState(false);
 
@@ -101,9 +101,13 @@ export function OTPVerification() {
             )}
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-3 cursor-pointer px-4 rounded-lg font-medium hover:bg-blue-600 transition-colors"
+              className="w-full bg-blue-500 text-white py-3 px-4 cursor-pointer rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center justify-center"
             >
-             {flag === "signup" ? "Sign up" : "Sign in"}
+              {verifyUserOtpLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin text-blue" />
+              ) : (
+                flag === "signup" ? "Sign up" : "Sign in"
+              )}
             </button>
           </form>
 
