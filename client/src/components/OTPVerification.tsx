@@ -101,6 +101,7 @@ export function OTPVerification() {
             )}
             <button
               type="submit"
+              disabled={isGetOtpLoading}
               className="w-full bg-blue-500 text-white py-3 px-4 cursor-pointer rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center justify-center"
             >
               {
