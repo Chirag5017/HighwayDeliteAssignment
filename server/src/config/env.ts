@@ -15,4 +15,5 @@ export const ENV = {
   SMTP_USERNAME : process.env.SMTP_USERNAME as string,
   SMTP_PASSWORD : process.env.SMTP_PASSWORD as string, 
   SMTP_FROM_EMAIL : process.env.SMTP_FROM_EMAIL as string,
+  NODE_ENV: process.env.NODE_ENV as string
 };

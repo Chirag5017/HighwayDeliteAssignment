@@ -2,18 +2,21 @@ import { Request, Response } from "express";
 import { UserService } from "../services/user.services";
 import { userRepo } from "../app";
 import { validateEmail } from "../utils/validateEmail";
+import { ENV } from "../config/env";
 
 interface cookieInterface {
   httpOnly: boolean,
   secure: boolean,
+  sameSite: "none",
   maxAge: number,
 }
 
-export const setCookie : cookieInterface = {
+export const setCookie: cookieInterface = {
   httpOnly: true,
-  secure: false,
+  secure: ENV.NODE_ENV === "production",
+  sameSite: "none",
   maxAge: 24 * 60 * 60 * 1000,
-}
+};
 
 export class UserController {
     constructor(private userService : UserService) {}
@@ -141,7 +144,7 @@ export class UserController {
     }
 
     logout = (req: Request, res: Response) => {
-        res.clearCookie("token", { httpOnly: true, sameSite: "strict", secure: false });
+        res.clearCookie("token", setCookie);
         res.json({ success: true, message: "Logged out successfully" });
     }
 }
