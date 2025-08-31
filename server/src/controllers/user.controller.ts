@@ -9,6 +9,7 @@ interface cookieInterface {
   secure: boolean,
   sameSite: "none",
   maxAge: number,
+  path : "/"
 }
 
 export const setCookie: cookieInterface = {
@@ -16,6 +17,7 @@ export const setCookie: cookieInterface = {
   secure: ENV.NODE_ENV === "production",
   sameSite: "none",
   maxAge: 24 * 60 * 60 * 1000,
+  path: "/", // ✅ cookie available for entire site
 };
 
 export class UserController {
@@ -144,7 +146,13 @@ export class UserController {
     }
 
     logout = (req: Request, res: Response) => {
-        res.clearCookie("token", setCookie);
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: ENV.NODE_ENV === "production",
+            sameSite: "none",
+            maxAge: 24 * 60 * 60 * 1000,
+            path: "/", // ✅ cookie available for entire site
+        });
         res.json({ success: true, message: "Logged out successfully" });
     }
 }
