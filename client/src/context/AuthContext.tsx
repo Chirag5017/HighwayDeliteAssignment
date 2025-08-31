@@ -30,6 +30,7 @@ interface AuthContextType {
   isGetOtpLoading: boolean;
   setIsGetOtpLoading: (loading: boolean) => void;
   sendOTP: (email: string | undefined, url: string) => Promise<boolean>;
+  isCheckSignLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [flag, setFlag] = useState("");
   const [loading, setLoading] = useState(true);
   const [isGetOtpLoading, setIsGetOtpLoading] = useState(false);
+  const [isCheckSignLoading, setIsCheckSignLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -115,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // 2) DO NOT optimistically set user before server cookie
     const URL = flag === "signin" ? "user/sign-in" : "user/sign-up";
-    setIsGetOtpLoading(true)
+    setIsCheckSignLoading(true)
     try {
       const { data } = await axios.post(`/${URL}`, {
         email: signUpData.email,
@@ -138,7 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       toast.error(err?.response?.data?.message || "Server error");
       navigate(`/${flag}`);
     } finally {
-      setIsGetOtpLoading(false);
+      setIsCheckSignLoading(false);
     }
   };
 
@@ -165,6 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isGetOtpLoading,
         setIsGetOtpLoading,
         sendOTP,
+        isCheckSignLoading
       }}
     >
       {children}
