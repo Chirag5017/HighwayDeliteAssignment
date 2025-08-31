@@ -36,7 +36,7 @@ export class UserController {
             // console.log(result)
             res
             .status(201)
-            .cookie("token", result.token)
+            .cookie("token", result.token, setCookie)
             .json({
                 user : result.user,
                 message : result.message,
@@ -63,7 +63,7 @@ export class UserController {
            const result = await this.userService.signIn(res, email, checked);
            res
             .status(201)
-            .cookie("token", result.token)
+            .cookie("token", result.token,setCookie)
             .json({
                  user : result.user,
                 message : result.message,
