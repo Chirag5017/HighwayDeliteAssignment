@@ -9,16 +9,17 @@ interface cookieInterface {
   secure: boolean,
   sameSite: "none" | "lax",
   maxAge: number,
-  path : "/"
+  path: string
 }
 
 export const setCookie: cookieInterface = {
   httpOnly: true,
   sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
-  secure: ENV.NODE_ENV === "production",
-  maxAge: 24 * 60 * 60 * 1000,
-  path: "/", // ✅ cookie available for entire site
+  secure: ENV.NODE_ENV === "production", // ✅ only https in prod
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
+  path: "/", 
 };
+
 
 export class UserController {
     constructor(private userService : UserService) {}

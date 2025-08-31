@@ -12,15 +12,7 @@ import { NotesProvider} from './context/NoteContext';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
-  const [delayed, setDelayed] = useState(true);
-
-  useEffect(() => {
-    let timer = setTimeout(() => setDelayed(false), 1000); // hold loader for ~0.8s
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading || delayed) return <Loader />;
-
+  if (loading) return <Loader />;
   return user ? <>{children}</> : <Navigate to="/signin" replace />;
 }
 
