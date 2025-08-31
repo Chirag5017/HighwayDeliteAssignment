@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Calendar } from 'lucide-react';
+import { Calendar, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Logo } from './Logo';
 import { BackGround } from './BackGround';
+import toast from 'react-hot-toast';
 
 export function SignUp() {
-  const { signUp } = useAuth();
+  const { signUp, isGetOtpLoading, setIsGetOtpLoading } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     dateOfBirth: '',
@@ -17,7 +18,10 @@ export function SignUp() {
     e.preventDefault();
     let response : boolean | undefined;
     if (formData.name && formData.dateOfBirth && formData.email) {
+      setIsGetOtpLoading(true);
       response = await signUp(formData);
+    } else {
+      toast.error("Please fill all the fields")
     }
     if(response === false) {
        setFormData({
@@ -75,13 +79,17 @@ export function SignUp() {
                 className="w-full px-4 py-3 border border-blue-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-blue-50/30"
               />
             </div>
-
-            <button
+             <button
               type="submit"
+              disabled={isGetOtpLoading}
               onClick={handleSubmit}
-              className="w-full bg-blue-500 text-white py-3.5 cursor-pointer px-4 rounded-lg font-medium text-sm hover:bg-blue-600 transition-colors mt-6"
+              className="w-full bg-blue-500 text-white py-3 px-4 cursor-pointer rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center justify-center"
             >
-              Get OTP
+              {isGetOtpLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin text-white" />
+              ) : (
+               "Get OTP"
+               )}
             </button>
           </div>
 

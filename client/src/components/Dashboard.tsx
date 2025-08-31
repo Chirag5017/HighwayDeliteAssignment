@@ -7,12 +7,12 @@ import { useAuth } from '../context/AuthContext';
 
 export function Dashboard() {
   const { user, logout } = useAuth();
-  const { notes, deleteNote, fetchNotes } = useNotes();
+  const { notes, deleteNote, fetchNotes, clearNotes } = useNotes();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [viewingNote, setViewingNote] = useState<Note | null>(null);
 
   useEffect(() => {
-    fetchNotes(); // ✅ load notes when dashboard mounts
+    fetchNotes();
   }, []);
 
   const handleDeleteNote = (noteId: string, e: React.MouseEvent) => {
@@ -24,6 +24,12 @@ export function Dashboard() {
     setViewingNote(note);
   };
 
+  const signOut = () => {
+      clearNotes();
+      console.log("Fweff");
+      logout();
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile */}
@@ -33,7 +39,7 @@ export function Dashboard() {
             <Sparkles className="w-5 h-5 text-blue-500" />
             <span className="text-lg font-medium text-gray-900">Dashboard</span>
           </div>
-          <button onClick={logout} className="text-blue-500 text-sm cursor-pointer font-medium">
+          <button onClick={signOut} className="text-blue-500 text-sm cursor-pointer font-medium">
             Sign Out
           </button>
         </div>
@@ -59,7 +65,7 @@ export function Dashboard() {
               ) : (
                 notes.map((note) => (
                   <div
-                    key={note.id}
+                    key={note._id}
                     className="bg-white rounded-xl p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                     onClick={() => handleViewNote(note)}
                   >
@@ -78,7 +84,7 @@ export function Dashboard() {
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={(e) => handleDeleteNote(note.id, e)}
+                          onClick={(e) => handleDeleteNote(note._id, e)}
                           className="text-gray-400 hover:text-red-500"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -99,13 +105,13 @@ export function Dashboard() {
       {/* Desktop */}
       <div className="hidden sm:block">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white px-8 py-6 flex items-center justify-between border-b border-gray-100">
+          <div className="bg-white px-8 py-6 flex rounded-xl items-center justify-between border-b border-gray-100">
             <div className="flex items-center gap-3">
               <Sparkles className="w-5 h-5 text-blue-500" />
-              <span className="text-2xl font-medium text-gray-900">Dashboard</span>
+              <span className="text-2xl  font-medium text-gray-900">Dashboard</span>
             </div>
             <button
-              onClick={logout}
+              onClick={signOut}
               className="text-blue-500 text-base cursor-pointer font-medium hover:text-blue-600"
             >
               Sign Out
@@ -133,7 +139,7 @@ export function Dashboard() {
                 ) : (
                   notes.map((note) => (
                     <div
-                      key={note.id}
+                      key={note._id}
                       className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                       onClick={() => handleViewNote(note)}
                     >
@@ -152,7 +158,7 @@ export function Dashboard() {
                             <Eye className="w-5 h-5" />
                           </button>
                           <button
-                            onClick={(e) => handleDeleteNote(note.id, e)}
+                            onClick={(e) => handleDeleteNote(note._id, e)}
                             className="text-gray-400 hover:text-red-500"
                           >
                             <Trash2 className="w-5 h-5" />
@@ -167,8 +173,6 @@ export function Dashboard() {
           </div>
         </div>
       </div>
-
-      {/* Modals */}
       <CreateNoteModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
       <ViewNoteModal note={viewingNote} isOpen={!!viewingNote} onClose={() => setViewingNote(null)} />
     </div>
@@ -188,7 +192,7 @@ export function CreateNoteModal({ isOpen, onClose }: CreateNoteModalProps) {
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (heading.trim() && description.trim()) {
-      addNote(heading.trim(), description.trim()); // ✅ uses context
+      addNote(heading.trim(), description.trim());
       setHeading('');
       setDescription('');
       onClose();
@@ -264,7 +268,7 @@ export function ViewNoteModal({ note, isOpen, onClose }: ViewNoteModalProps) {
 
   const handleDelete = () => {
     if (note) {
-      deleteNote(note.id);
+      deleteNote(note._id);
       onClose();
     }
   };

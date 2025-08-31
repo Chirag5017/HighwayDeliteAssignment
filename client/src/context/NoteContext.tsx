@@ -1,11 +1,12 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useAuth } from './AuthContext';
 
 const Backend_Url = import.meta.env.VITE_BACKEND_URL;
 
 export interface Note  {
-  id: string;
+  _id: string;
   heading: string;
   description: string;
 };
@@ -15,6 +16,7 @@ interface NotesContextType  {
   addNote: (heading: string, description: string) => void;
   deleteNote: (noteId: string) => void;
   fetchNotes: () => void;   // ✅ new function
+  clearNotes: () => void
 };
 
 
@@ -23,14 +25,16 @@ const NotesContext = createContext<NotesContextType | undefined>(undefined);
 
 export function NotesProvider({ children }: { children: ReactNode }) {
   const [notes, setNotes] = useState<Note[]>([]);
+  const { setLoading } = useAuth();
 
   const fetchNotes = async () => {
     try {
       const result = await axios.get(`${Backend_Url}/note/show-all`,{ withCredentials: true });
       const response = await result.data;
-      console.log(response);
+      // console.log(response);
       if (response.success) {
         setNotes(response.allNotes); // ✅ assuming backend sends { success, notes }
+        setLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -44,11 +48,11 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       const response = result.data;
       if(response.success) {
         toast.success(response.message);
-        setNotes((prevNotes) => [...prevNotes, {id : response.note._id, heading, description}]); // ✅ append new note
+        setNotes((prevNotes) => [...prevNotes, {_id : response.note._id, heading, description}]); // ✅ append new note
       }
-    } catch (error) {
+    } catch (error : any) {
       console.log(error);
-      toast.error("Invalid Request")
+      toast.error(error.response.data.message)
     }
   };
 
@@ -58,19 +62,24 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       const response = result.data;
       if(response.success) {
         toast.success(response.message);
-        setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
+        setNotes((prevNotes) => prevNotes.filter((note) => note._id !== noteId));
       }
-    } catch (error) {
+    } catch (error : any) {
       console.log(error);
-      toast.error("Invalid Request")
+      toast.error(error.response.data.message)
     }
+  };
+
+  const clearNotes = () => {
+    setNotes([]);
   };
 
   const value = {
     notes,
     addNote,
     deleteNote,
-    fetchNotes, // ✅ expose it
+    fetchNotes,
+    clearNotes
   };
 
   return <NotesContext.Provider value={value}>{children}</NotesContext.Provider>;

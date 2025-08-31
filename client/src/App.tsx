@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Dashboard } from './components/Dashboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -7,16 +7,24 @@ import { SignIn } from './components/SignIn';
 import { OTPVerification } from './components/OTPVerification';
 import { Toaster } from 'react-hot-toast';
 import { Loader } from './components/Loader';
-import { NotesProvider } from './context/NoteContext';
+import { NotesProvider, useNotes } from './context/NoteContext';
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const { notes } = useNotes();
+  const [delayed, setDelayed] = useState(true);
 
-  if (loading) return <Loader/> // ✅ don't redirect until we check
+  useEffect(() => {
+    let timer = setTimeout(() => setDelayed(false), 1000); // hold loader for ~0.8s
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading || delayed) return <Loader />;
 
   return user ? <>{children}</> : <Navigate to="/signin" replace />;
 }
+
 
 
 function PublicRoute({ children }: { children: React.ReactNode }) {

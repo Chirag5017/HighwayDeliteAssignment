@@ -20,7 +20,10 @@ interface AuthContextType {
   verifyOTP: (otp: string) => void,
   logout: () => void,
   loading: boolean,
+  setLoading: (loading: boolean) => void,
   flag: string,
+  isGetOtpLoading: boolean,
+  setIsGetOtpLoading : (loading: boolean) => void,
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +34,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [OTP, setOTP] = useState("");
   const [flag, setFlag] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isGetOtpLoading, setIsGetOtpLoading] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -78,7 +83,7 @@ useEffect(() => {
       return false;
     }
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
-    // console.log(otp);
+    console.log(otp);
     setOTP(otp);
 
     try {
@@ -91,6 +96,7 @@ useEffect(() => {
       const response = result.data;
       if (response.success) {
         toast.success(response.message);
+         setIsGetOtpLoading(false);
         return true;
       } else {
         toast.error(response.message);
@@ -155,7 +161,10 @@ useEffect(() => {
         verifyOTP,
         logout,
         loading,
-        flag
+        setLoading,
+        flag,
+        isGetOtpLoading,
+        setIsGetOtpLoading,
       }}
     >
       {children}

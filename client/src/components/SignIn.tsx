@@ -4,16 +4,19 @@ import { useAuth } from '../context/AuthContext';
 import { Logo } from './Logo';
 import { BackGround } from './BackGround';
 import toast from 'react-hot-toast';
+import { Loader2 } from 'lucide-react';
 
 export function SignIn() {
-  const { signIn } = useAuth();
+  const { signIn, isGetOtpLoading, setIsGetOtpLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [checked, setChecked] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (email !== "") {
-      signIn(email, checked);
+       setIsGetOtpLoading(true);
+      const response = await signIn(email, checked);
+      if(!response) setEmail("");
     } else {
       toast.error("Email is missing");
     }
@@ -32,12 +35,12 @@ export function SignIn() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm text-black mb-2">Email</label>
+              <label className="block text-xs text-gray-500 mb-2 font-medium">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-300"
+                className="w-full px-4 py-3 border border-blue-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-blue-50/30"
                 placeholder="jonas_kahnwald@gmail.com"
               />
             </div>
@@ -49,16 +52,21 @@ export function SignIn() {
                 onChange={(e) => setChecked(e.target.checked)}
                 className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
               />
-              <label htmlFor="remember" className="ml-2 text-sm text-gray-500">
+              <label htmlFor="remember" className="ml-2 text-gray-500 block text-xs font-medium">
                 Keep me signed in
               </label>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-3 px-4 cursor-pointer rounded-lg font-medium hover:bg-blue-600 transition-colors"
+              disabled={isGetOtpLoading}
+              className="w-full bg-blue-500 text-white py-3 px-4 cursor-pointer rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center justify-center"
             >
-              Continue
+              {isGetOtpLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin text-white" />
+              ) : (
+               "Get OTP"
+               )}
             </button>
           </form>
 
