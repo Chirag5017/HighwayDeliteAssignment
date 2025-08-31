@@ -7,12 +7,11 @@ import { SignIn } from './components/SignIn';
 import { OTPVerification } from './components/OTPVerification';
 import { Toaster } from 'react-hot-toast';
 import { Loader } from './components/Loader';
-import { NotesProvider, useNotes } from './context/NoteContext';
+import { NotesProvider} from './context/NoteContext';
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
-  const { notes } = useNotes();
   const [delayed, setDelayed] = useState(true);
 
   useEffect(() => {
