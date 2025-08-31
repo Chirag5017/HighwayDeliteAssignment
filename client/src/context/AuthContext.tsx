@@ -115,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // 2) DO NOT optimistically set user before server cookie
     const URL = flag === "signin" ? "user/sign-in" : "user/sign-up";
-
+    setIsGetOtpLoading(true)
     try {
       const { data } = await axios.post(`/${URL}`, {
         email: signUpData.email,
@@ -137,6 +137,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       toast.error(err?.response?.data?.message || "Server error");
       navigate(`/${flag}`);
+    } finally {
+      setIsGetOtpLoading(false);
     }
   };
 
