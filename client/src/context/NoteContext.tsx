@@ -15,7 +15,7 @@ interface NotesContextType  {
   notes: Note[];
   addNote: (heading: string, description: string) => void;
   deleteNote: (noteId: string) => void;
-  fetchNotes: () => void;   // ✅ new function
+  fetchNotes: () => void;
   clearNotes: () => void
 };
 
@@ -33,7 +33,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       const response = await result.data;
       // console.log(response);
       if (response.success) {
-        setNotes(response.allNotes); // ✅ assuming backend sends { success, notes }
+        setNotes(response.allNotes);
         setLoading(false);
       }
     } catch (error) {
@@ -48,7 +48,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       const response = result.data;
       if(response.success) {
         toast.success(response.message);
-        setNotes((prevNotes) => [...prevNotes, {_id : response.note._id, heading, description}]); // ✅ append new note
+        setNotes((prevNotes) => [...prevNotes, {_id : response.note._id, heading, description}]); 
       }
     } catch (error : any) {
       console.log(error);

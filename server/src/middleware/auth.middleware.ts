@@ -11,39 +11,35 @@ interface MyJwtPayload extends JwtPayload {
 
 
 export class AuthMiddleware {
+  authenticateUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token =
+        req.cookies.token ||
+        req.header("Authorization")?.replace("Bearer ", "").trim();
 
-    authenticateUser = async(req : Request, res : Response, next : NextFunction) => {
-            try {
-                const token = req.cookies.token || req.header("Authorization")?.replace("Bearer ", "").trim();
-                // console.log(token);
-                
-                if(!token) {
-                    return res
-                    .status(401)
-                    .json({
-                        success : false,
-                        message : "Unauthorized Request"
-                    })
-                }
-                
-                const decodeToken = jwt.verify(token, ENV.TOKEN_SECRET) as MyJwtPayload;
-                if (!decodeToken) {
-                    return res.status(401).json({
-                        message: "Invalid token",
-                        success: false,
-                    });
-                }
+      if (!token) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized Request - No token",
+        });
+      }
 
-                req.id = decodeToken.id;
-                next();
+      const decodeToken = jwt.verify(token, ENV.TOKEN_SECRET) as MyJwtPayload;
 
-            } catch (error : any) {
-                res
-                .status(401)
-                .json({
-                    success : false,
-                    message: error.message || "Invalid Token"
-                })
-            }
+      if (!decodeToken) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid token",
+        });
+      }
+
+      req.id = decodeToken.id;
+      next();
+    } catch (error: any) {
+      return res.status(401).json({
+        success: false,
+        message: error.message || "Invalid Token",
+      });
     }
+  };
 }
